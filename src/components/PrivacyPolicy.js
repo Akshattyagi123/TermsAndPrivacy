@@ -27,6 +27,7 @@ const PrivacyPolicy = () => {
         return () => window.removeEventListener('resize', checkScreenSize);
     }, []);
 
+
     const scrollToSection = (ref, sectionName) => {
         if (ref.current) {
             if (isSmallScreen) {
