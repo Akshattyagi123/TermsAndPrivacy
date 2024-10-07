@@ -5,8 +5,8 @@ import TermsCondition from './components/TermsCondition';
 function App() {
   return (
     <div className="App">
-      <PrivacyPolicy />
-      {/* <TermsCondition></TermsCondition> */}
+      {/* <PrivacyPolicy /> */}
+      <TermsCondition></TermsCondition>
     </div>
   );
 }

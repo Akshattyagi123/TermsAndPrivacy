@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 
 const TermsCondition = () => {
     // Create refs for each section and the scrollable container
@@ -14,24 +14,45 @@ const TermsCondition = () => {
     const contactUsRef = useRef(null);
     const scrollContainerRef = useRef(null); // Ref for the scrollable container
 
+    const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+    useEffect(() => {
+        const checkScreenSize = () => {
+            setIsSmallScreen(window.innerWidth <= 720); // 720px is the max of 'sm' breakpoint
+        };
+
+        checkScreenSize();
+        window.addEventListener('resize', checkScreenSize);
+
+        return () => window.removeEventListener('resize', checkScreenSize);
+    }, []);
+
     // State to track the active section
     const [activeSection, setActiveSection] = useState('');
 
     const scrollToSection = (ref, sectionName) => {
-        if (ref.current && scrollContainerRef.current) {
-            // Calculate the top position of the target section relative to the scrollable container
-            const sectionTop = ref.current.offsetTop;
-            // Scroll the container to the target section
-            scrollContainerRef.current.scrollTo({
-                top: sectionTop - 10, // Adjust for header height if needed
-                behavior: 'smooth',
-            });
+        if (ref.current) {
+            if (isSmallScreen) {
+                // For small screens, scroll the window
+                window.scrollTo({
+                    top: ref.current.offsetTop - 20, // Adjust for any fixed headers
+                    behavior: 'smooth',
+                });
+            } else {
+                // Existing logic for larger screens
+                if (scrollContainerRef.current) {
+                    const sectionTop = ref.current.offsetTop;
+                    scrollContainerRef.current.scrollTo({
+                        top: sectionTop - 10,
+                        behavior: 'smooth',
+                    });
+                }
+            }
             setActiveSection(sectionName);
         }
     };
-
     return (
-        <div className="bg-gray-50 p-8 md:p-16 lg:p-24">
+        <div className="bg-gray-50 p-8 md:p-16 lg:p-24 xl:p-24">
             {/* Main Title */}
             <h1 className="text-4xl font-bold mb-4 text-center font-poppins">
                 Terms and <span className="text-green-500 font-poppins">Conditions</span>
@@ -42,7 +63,7 @@ const TermsCondition = () => {
                 you agree to be bound by these Terms. If you do not agree to these Terms, please do not use the Platform.
             </p>
 
-            <div className="flex flex-col lg:flex-row gap-8 relative">
+            <div className="flex flex-col md:flex-row xl:flex-row lg:flex-row gap-8 relative">
                 <aside className="lg:w-1/4 lg:sticky lg:top-8 h-fit">
                     <div className="p-6 shadow-none">
                         <ul className="space-y-4">
@@ -111,10 +132,14 @@ const TermsCondition = () => {
                 </aside>
 
                 {/* Divider Line */}
-                <div className="hidden lg:block w-1 h-auto bg-green-500"></div>
+                <div className="hidden md:block xl:block lg:block w-1 h-auto bg-green-500"></div>
 
                 {/* Main Content - Scrollable */}
-                <section className="lg:w-3/4 max-h-[70vh] overflow-y-scroll no-scrollbar" ref={scrollContainerRef} style={{ '-webkit-overflow-scrolling': 'touch' }}>
+                <section
+                    className={`lg:w-3/4 ${isSmallScreen ? '' : 'max-h-[70vh] overflow-y-scroll no-scrollbar'}`}
+                    ref={scrollContainerRef}
+                    style={{ '-webkit-overflow-scrolling': 'touch' }}
+                >
                     {/* Section: Information We Collect */}
                     <div className="mb-8" ref={infoWeCollectRef}>
                         <h2 className="text-2xl font-bold mb-4">Use of the Platform:</h2>
